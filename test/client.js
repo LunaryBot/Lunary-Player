@@ -3,7 +3,6 @@ const { Client } = require("discord.js");
 const client = new Client();
 module.exports = client;
 
-require("./functions/emoji");
 require("./functions/quote");
 require("./handlers/commandHandler")(client);
 require("./handlers/eventHandler")(client);

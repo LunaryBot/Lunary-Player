@@ -1,0 +1,26 @@
+{
+  "name": "lunary-player",
+  "version": "1.0.0",
+  "description": "Simple Lavalink Wrapper",
+  "main": "src/index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "node test/client.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LunaryBot/Lunary-Player.git"
+  },
+  "author": "JVOPINHO",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/LunaryBot/Lunary-Player/issues"
+  },
+  "homepage": "https://github.com/LunaryBot/Lunary-Player#readme",
+  "dependencies": {
+    "discord.js": "^12.5.3",
+    "ws": "^7.4.4"
+  }
+}
