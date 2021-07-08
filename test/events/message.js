@@ -13,7 +13,7 @@ if(!perms.has("SEND_MESSAGES")) return;
   if(!perms.has("ATTACH_FILES")) return message.quote(`> Eu preciso de permissão de \`Anexar arquivos\``)
 
   let prefixo
-  let mentions = [`<@${client.user.id}> `, `<@${client.user.id}>`, `<@!${client.user.id}> `, `<@!${client.user.id}>`, "^"]
+  let mentions = [`<@${client.user.id}> `, `<@${client.user.id}>`, `<@!${client.user.id}> `, `<@!${client.user.id}>`, client.config.prefix]
   for (let i of mentions) {
     if(message.content.startsWith(i.toLowerCase())) {
       prefixo = i

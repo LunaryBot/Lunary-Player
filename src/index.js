@@ -1,1 +1,3 @@
-console.log(require("ws"))
+module.exports = {
+    Manager: require("./_Manager")
+}

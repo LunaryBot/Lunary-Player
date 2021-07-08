@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/LunaryBot/Lunary-Player#readme",
   "dependencies": {
+    "axios": "^0.21.1",
     "discord.js": "^12.5.3",
     "ws": "^7.4.4"
   }
