@@ -15,6 +15,7 @@ module.exports = class EvalCommand {
         .setAuthor("Comando restrito", "https://cdn.discordapp.com/emojis/829429780155858974.gif?size=2048")
         .setDescription("**Apenas meus desenvolvedores podem usar este comando!**"))
 
+        let player = client.music.players.get(message.guild.id)
         let conteudo = args.join(" ").replace(/```js|```/g, "")
         const start = Date.now()
         try {

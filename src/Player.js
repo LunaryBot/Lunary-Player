@@ -77,7 +77,8 @@ class Player extends EventEmitter {
 
         this.queue.current = track;
         if(this.queue[0]) this.queue.next = this.queue[0];
-        return this.superPlay(track.track);
+        this.superPlay(track.track);
+        return this
     };
 
     searchSongs(query) {

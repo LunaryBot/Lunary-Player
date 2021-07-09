@@ -2,16 +2,7 @@ const { Manager } = require("../../src/Manager");
 const client = require("../client")
 
 client.on("ready", async() => {
-    client.music = new Manager(client, [
-      {
-        id: "Node 1",
-        password: '1511970j',
-        host: 'lunary-lavalink.herokuapp.com',
-        options: {
-            followRedirects: true
-        }
-      }
-    ], {
+    client.music = new Manager(client, client.config.nodes, {
     user: client.user.id
   });
   client.music.connect()

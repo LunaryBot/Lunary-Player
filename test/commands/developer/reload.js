@@ -33,7 +33,7 @@ module.exports = class EvalCommand {
                 let command = new base()
                 client.commands.set(command.name, command);
                 if (command.aliases && Array.isArray(command.aliases)) {
-                for (apelido of command.aliases) {
+                for (let apelido of command.aliases) {
                 client.aliases.set(apelido, command.name);
                 };
                 };

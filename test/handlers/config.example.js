@@ -3,6 +3,7 @@ module.exports = {
     prefix: "Prefixo para executar os comandos",
     lavalink_nodes: [
         {
+            id: "Node", // Indentificação do node
             host: "localhost", // Host do node (String)
             password: "youshallnotpass", // Senha de acesso do node (String)
             port: 2333, // Porta de acesso ao node (Number)
