@@ -1,7 +1,9 @@
+Object.defineProperty(exports, "__esModule", { value: true })
+
 module.exports = class Queue extends Array {
     constructor(...args) {
       super(...args)
-      this.previous = null
+      this.previousTracks = []
       this.current = null
       this.next = null
     }
@@ -14,5 +16,9 @@ module.exports = class Queue extends Array {
 
     get totalSize() {
         return this.length + (this.current ? 1 : 0)
+    }
+
+    get provius() {
+        return this.previousTracks[0]
     }
 }

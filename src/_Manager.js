@@ -1,7 +1,7 @@
 Object.defineProperty(exports, "__esModule", { value: true })
 const { EventEmitter } = require("events")
 const NodeManager = require("./NodeManager")
-const _Player = require("./Player")
+const _Player = require("./player/Player")
 class Manager extends EventEmitter {
     constructor(nodes, options) {
         super()

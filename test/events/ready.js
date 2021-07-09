@@ -2,7 +2,7 @@ const { Manager } = require("../../src/Manager");
 const client = require("../client")
 
 client.on("ready", async() => {
-    client.music = new Manager(client, client.config.nodes, {
+    client.music = new Manager(client, client.config.lavalink_nodes, {
     user: client.user.id
   });
   client.music.connect()
