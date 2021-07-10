@@ -1,4 +1,5 @@
 const Discord = require('discord.js')
+const { Utils: { Song } } = require('../../../src/index')
 
 module.exports = class EvalCommand {
     constructor() {

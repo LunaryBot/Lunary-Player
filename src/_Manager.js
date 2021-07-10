@@ -108,8 +108,7 @@ class Manager extends EventEmitter {
         if (!server || !state || !this.expecting.has(guildID))
             return false
         const player = this.players.get(guildID)
-        if (!player)
-            return false
+        if (!player) return false
         await player.connect({ sessionId: state.session_id, event: server })
         this.expecting.delete(guildID)
         return true

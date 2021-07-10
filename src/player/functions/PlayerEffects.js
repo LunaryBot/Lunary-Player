@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true })
 class PlayerEffects {
     constructor(player) {
         this.player = player
+        this.volume = 100
         this.nightcore = false
         this.vaporwave = false
         this._8d = false
@@ -62,7 +63,13 @@ class PlayerEffects {
         
         return this.setFilter()
     }
-    
+
+    setVolume(value) {
+        this.send("volume", { volume })
+        this.volume = value
+        
+        return this
+    }
 }
 
 function bol(value) {

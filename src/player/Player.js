@@ -4,18 +4,20 @@ const { EventEmitter } = require("events")
 const Queue = require("./Queue")
 const { default: axios } = require('axios')
 const PlayerEffects = require("./functions/PlayerEffects")
+const { Song } = require("../utils/Song")
 
 class Player extends EventEmitter {
     constructor(node, id) {
         super()
-        this.node = node
         this.id = id
+        this.node = node
+        this.client = this.node.manager.client
         this.state = { volume: 100 }
         this.playing = false
         this.timestamp = null
         this.paused = false
-        this.track = null
         this.queue = new Queue()
+        this.trackPosition = this.position
         this.effects = new PlayerEffects(this)
         this.voiceUpdateState = null
         this.on("event", data => {
@@ -65,7 +67,6 @@ class Player extends EventEmitter {
     }
     async superPlay(track, options = {}) {
         const d = await this.send("play", { ...options, track })
-        this.track = track
         this.playing = true
         this.timestamp = Date.now()
         return d
@@ -89,7 +90,7 @@ class Player extends EventEmitter {
         return this
     }
 
-    searchSongs(query) {
+    searchSongs(query, requester) {
         const URL = `http${this.node.port ? '' : 's'}://${this.node.host}${this.node.port ? `:${this.node.port}` : ''}/loadtracks`
         const a = new URLSearchParams({
           identifier: query
@@ -98,7 +99,10 @@ class Player extends EventEmitter {
           headers: { Authorization: this.node.password }
         }).then(res => {
           if(res.status != 200) throw res.statusText
-          res.data.tracks.map(({ track, info }) => ({ track, ...info }))
+          res.data.tracks = res.data.tracks.map(function(data) {
+              let track = new Song(data, requester, res.data.playlistInfo, query)
+              return track
+          })
           return res.data
         })
     }
@@ -117,13 +121,6 @@ class Player extends EventEmitter {
     }
     resume() {
         return this.pause(false)
-    }
-    async volume(volume) {
-        const d = await this.send("volume", { volume })
-        this.state.volume = volume
-        if (this.listenerCount("volume"))
-            this.emit("volume", volume)
-        return d
     }
     async seek(position) {
         const d = await this.send("seek", { position })
@@ -152,6 +149,11 @@ class Player extends EventEmitter {
     }
     get manager() {
         return this.node.manager
+    }
+
+    get position() {
+        if(!this.queue.current) return 0
+        else return this.queue.current.duration - ((this.timestamp + this.queue.current.duration) - Date.now())
     }
 }
 

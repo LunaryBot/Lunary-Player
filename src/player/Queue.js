@@ -10,8 +10,8 @@ module.exports = class Queue extends Array {
 
     get duration() {
         let a, b
-        const current = (b = (a = this.current) === null || a === void 0 ? void 0 : a.info.length) !== null && b !== void 0 ? b : 0
-        return this.reduce((acc, cur) => acc + (cur.info.length || 0), current)
+        const current = (b = (a = this.current) === null || a === void 0 ? void 0 : a.duration) !== null && b !== void 0 ? b : 0
+        return this.reduce((acc, cur) => acc + (cur.duration || 0), current)
     }
 
     get totalSize() {

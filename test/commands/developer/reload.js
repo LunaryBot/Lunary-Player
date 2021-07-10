@@ -17,27 +17,21 @@ module.exports = class EvalCommand {
 
         if(!args[0]) return message.quote("Ei, você precisa informar o que é para fazer o reload...")
         try {
-            if(args.join(" ").toLowerCase() == "html function") {
-                delete require.cache[require.resolve("../../functions/toHTML.js")]
+            let cmd = client.commands.get(args[0]) || client.commands.get(client.aliases.get(args[0]))
+            if(!cmd) return message.quote(`Não achei este comando!`)
 
-                message.quote("Reload da proto `toHTML` feito")
-            } else {
-                let cmd = client.commands.get(args[0]) || client.commands.get(client.aliases.get(args[0]))
-                if(!cmd) return message.quote(`Não achei este comando!`)
+            let c = `../${cmd.categoria}/${cmd.name}.js`
 
-                let c = `../${cmd.categoria}/${cmd.name}.js`
+            delete require.cache[require.resolve(c)]
 
-                delete require.cache[require.resolve(c)]
-
-                let base = require(c)
-                let command = new base()
-                client.commands.set(command.name, command);
-                if (command.aliases && Array.isArray(command.aliases)) {
+            let base = require(c)
+            let command = new base()
+            client.commands.set(command.name, command);
+            if (command.aliases && Array.isArray(command.aliases)) {
                 for (let apelido of command.aliases) {
-                client.aliases.set(apelido, command.name);
+                    client.aliases.set(apelido, command.name);
                 };
-                };
-            }
+            };
         } catch (e) {
             message.quote(`Aconteceu um erro...\n\`\`\`js\n${e}\`\`\``)
         }
