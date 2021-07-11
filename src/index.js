@@ -1,7 +1,7 @@
 const { Playlist, Song } = require("./utils/Song");
 
 module.exports = {
-    Manager: require("./_Manager"),
+    Manager: require("./LavalinkManager"),
     Player: require("./player/Player"),
     Queue: require("./player/Queue"),
     Utils: {

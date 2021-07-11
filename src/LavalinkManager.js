@@ -12,12 +12,30 @@ class Manager extends EventEmitter {
         this.shards = 1
         this.Player = _Player.Player
         this.expecting = new Set()
+        this.playerEvents = {}
         if (options.user) this.user = options.user
         if (options.shards) this.shards = options.shards
         if (options.player) this.Player = options.player
         if (options.send) this.send = options.send
+
+        if (options.events) {
+            if(options.events["PLAYER_TRACK_END"] && typeof options.events["PLAYER_TRACK_END"] == "function") {
+                this.playerEvents["PLAYER_TRACK_END"] = options.events["PLAYER_TRACK_END"]
+            }
+
+            if(options.events["PLAYER_TRACK_START"] && typeof options.events["PLAYER_TRACK_START"] == "function") {
+                this.playerEvents["PLAYER_TRACK_START"] = options.events["PLAYER_TRACK_START"]
+            }
+
+            if(options.events["PLAYER_QUEUE_END"] && typeof options.events["PLAYER_QUEUE_END"] == "function") {
+                this.playerEvents["PLAYER_QUEUE_END"] = options.events["PLAYER_QUEUE_END"]
+            }
+        }
+
         for (const node of nodes) this.createNode(node)
+        require("./ManagerEvents")(this)
     }
+
     connect() {
         return Promise.all([...this.nodes.values()].map(node => node.connect()))
     }

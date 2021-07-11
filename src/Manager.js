@@ -1,5 +1,5 @@
 Object.defineProperty(exports, "__esModule", { value: true });
-const _Manager = require("./_Manager");
+const _Manager = require("./LavalinkManager");
 class Manager extends _Manager {
     constructor(client, nodes, options) {
         super(nodes, options || {});

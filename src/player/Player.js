@@ -16,6 +16,7 @@ class Player extends EventEmitter {
         this.playing = false
         this.timestamp = null
         this.paused = false
+        this.queueIndex = 0
         this.queue = new Queue()
         this.trackPosition = this.position
         this.effects = new PlayerEffects(this)
@@ -23,20 +24,16 @@ class Player extends EventEmitter {
         this.on("event", data => {
             switch (data.type) {
                 case "TrackStartEvent":
-                    if (this.listenerCount("start"))
-                        this.emit("start", data)
+                    if (this.listenerCount("start")) this.emit("start", data)
                     break
                 case "TrackEndEvent":
-                    if (data.reason !== "REPLACED")
-                        this.playing = false
+                    if (data.reason !== "REPLACED") this.playing = false
                     this.track = null
                     this.timestamp = null
-                    if (this.listenerCount("end"))
-                        this.emit("end", data)
+                    if (this.listenerCount("end")) this.emit("end", data)
                     break
                 case "TrackExceptionEvent":
-                    if (this.listenerCount("error"))
-                        this.emit("error", data)
+                    if (this.listenerCount("error")) this.emit("error", data)
                     break
                 case "TrackStuckEvent":
                     this.stop()
@@ -60,33 +57,68 @@ class Player extends EventEmitter {
         this.on('end', () => {
             if(this.queue.length <= 0) {
                 this.destroy()
+                if(this.manager.listenerCount("event")) this.manager.emit("event", {
+                    type: "PlayerQueueEnd",
+                    player: this
+                })
                 return this.manager.leave(this.id)
             }
+
+            this.queueIndex += 1
+
             this.play()
         })
     }
     async superPlay(track, options = {}) {
-        const d = await this.send("play", { ...options, track })
+        const d = await this.send("play", { ...options, track: track.track })
         this.playing = true
         this.timestamp = Date.now()
+        if(this.manager.listenerCount("event")) this.manager.emit("event", {
+            type: "PlayerTrackStart",
+            player: this,
+            track: track
+        })
         return d
     }
 
-    play() {
-        const track = this.queue.shift()
+    // async play(options = {}) {
+    //     let proviusTrack = this.queue.current 
+    //     const track = this.queue.shift()
+    //     if(!track) {
+    //         if(this.manager.listenerCount("event")) this.manager.emit("event", {
+    //             type: "PlayerQueueEnd",
+    //             player: this
+    //         })
+    //       return
+    //     }
+    //     if(this.queue.current && options.addPrevius != false) this.queue.previousTracks.unshift(this.queue.current)
+        
+    //     // if(this.queue.previous && this.queue.previous.isStream && !track.isStream) {
+    //     //   if(this.vaporwave) this.setVaporwave(true)
+    //     //   if(this.nightcore) this.setNightcore(true)
+    //     // }
+
+    //     this.queue.current = track
+    //     if(this.queue[0]) this.queue.next = this.queue[0]
+    //     await this.superPlay(track)
+    //     return this
+    // }
+
+    async play(options = {}) {
+        let proviusTrack = this.queue.current 
+        const track = this.queue[this.queueIndex]
         if(!track) {
-          this.emit('queueEnd')
+            if(this.manager.listenerCount("event")) this.manager.emit("event", {
+                type: "PlayerQueueEnd",
+                player: this
+            })
           return
         }
-        if(this.queue.current) this.queue.previousTracks.unshift(this.queue.current)
-        // if(this.queue.previous && this.queue.previous.isStream && !track.isStream) {
-        //   if(this.vaporwave) this.setVaporwave(true)
-        //   if(this.nightcore) this.setNightcore(true)
-        // }
 
         this.queue.current = track
-        if(this.queue[0]) this.queue.next = this.queue[0]
-        this.superPlay(track.track)
+        if(this.queue[this.queueIndex - 1]) this.queue.previous = this.queue[this.queueIndex - 1]
+        if(this.queue[this.queueIndex + 1]) this.queue.next = this.queue[this.queueIndex + 1]
+        await this.superPlay(track)
         return this
     }
 
@@ -147,6 +179,19 @@ class Player extends EventEmitter {
         if (!this.node.connected) return Promise.reject(new Error("No available websocket connection for selected node."))
         return this.node.send({ ...data, op, guildId: this.id })
     }
+
+    skip() {
+        this.send("stop")
+        return this
+    }
+
+    back() {
+        if(!this.queue.previous) return this 
+        this.queueIndex = this.queueIndex - 2
+        this.skip()
+        return this.queueIndex + 1
+    }
+
     get manager() {
         return this.node.manager
     }

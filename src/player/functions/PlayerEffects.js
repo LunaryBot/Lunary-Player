@@ -31,7 +31,6 @@ class PlayerEffects {
         if(this.equalizer.length) obj.equalizer = this.equalizer  
 
         this.player.send("filters", obj)
-
         return this
     }
 
