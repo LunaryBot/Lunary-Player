@@ -7,6 +7,7 @@ class PlayerEffects {
         this.nightcore = false
         this.vaporwave = false
         this._8d = false
+        this.tremolo = false
         this.equalizer = []
     }
 
@@ -22,6 +23,8 @@ class PlayerEffects {
             obj.timescale = { pitch: 1.3 }
             if(this.player.queue.current && !this.player.queue.current.isStream) obj.timescale.speed = 1.2 
         }
+
+        if(this.tremolo) obj.tremolo = { depth: 0.5, frequency: 20 }
 
         if(this._8d) obj.rotation = { rotationHz: 0.1 }
 
@@ -65,10 +68,17 @@ class PlayerEffects {
     }
 
     setVolume(value) {
-        this.send("volume", { volume })
+        this.player.send("volume", { volume: Number(value) || 100 })
         this.volume = value
         
         return this
+    }
+
+    setTremolo(value) {
+        value = bol(value)
+        this.tremolo = value
+
+        return this.setFilter()
     }
 }
 
