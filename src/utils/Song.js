@@ -3,7 +3,7 @@ const { URL } = require("url")
 
 
 class Song {
-    constructor(track = {}, requester, playlistInfo, query) {
+    constructor(track = {}, requester, res, query) {
         this.title = track.info.title || "Unknown Title"
         this.author = track.info.author || "Unknown Artist"
         this.duration = track.info.length
@@ -16,7 +16,7 @@ class Song {
         this.track = track.track
         this.playlist = null
         this.requester = requester
-        if(playlistInfo && query && checkURL(query)) this.playlist = new Playlist(playlistInfo, query)
+        if(res.loadType == "PLAYLIST_LOADED" && query && res.playlistInfo) this.playlist = new Playlist(res.playlistInfo, query)
     }
 }
 

@@ -26,7 +26,7 @@ class NodeManager {
             followRedirects: false,
             resumeTimeout: 120,
             resumeKey: undefined,
-            reconnectInterval: 15000
+            reconnectInterval: 5000
         }
     }) {
         if(!options.options) options.options = {}
@@ -57,9 +57,8 @@ class NodeManager {
                 "Num-Shards": String(this.manager.shards || 1),
                 "User-Id": this.manager.user
             };
-            if (this.resumeKey)
-                headers["Resume-Key"] = this.resumeKey;
-                const a = this.port ? `ws://${this.host}:${this.port}/` : `ws://${this.host}/`;
+            if (this.resumeKey) headers["Resume-Key"] = this.resumeKey;
+            const a = this.port ? `ws://${this.host}:${this.port}/` : `ws://${this.host}/`;
             const ws = new WebSocket(a, { followRedirects: this.followRedirects, headers });
             const onEvent = (event) => {
                 ws.removeAllListeners();
@@ -129,9 +128,11 @@ class NodeManager {
         if (!error) return
         this.manager.emit("error", error, this)
         this.reconnect()
+        console.log(`[LAVALINK]: ${this.id} teve um erro e foi desconectado.`)
     }
     onClose(event) {
         this.manager.emit("disconnect", event, this)
+        console.log(`[LAVALINK]: ${this.id} foi desconectado.`)
         if (event.code !== 1000 || event.reason !== "destroy") return this.reconnect()
     }
     reconnect() {
@@ -140,6 +141,7 @@ class NodeManager {
             this.ws = null
             this.manager.emit("reconnecting", this)
             this.connect()
+            console.log(`[LAVALINK]: ${this.id} foi reconectado.`)
         }, this.reconnectInterval)
     }
     _send({ data, resolve, reject }) {
@@ -151,6 +153,15 @@ class NodeManager {
     async _queueFlush() {
         await Promise.all(this._queue.map(this._send))
         this._queue = []
+    }
+
+    get ping() {
+        return (async() => {
+            let ping
+            let p1 = Date.now()
+            let d = await this.send({ op: "ping" })
+            return Date.now() - p1
+        })()
     }
 }
 module.exports = NodeManager

@@ -18,21 +18,12 @@ class Manager extends EventEmitter {
         if (options.player) this.Player = options.player
         if (options.send) this.send = options.send
 
-        if (options.events) {
-            if(options.events["PLAYER_TRACK_END"] && typeof options.events["PLAYER_TRACK_END"] == "function") {
-                this.playerEvents["PLAYER_TRACK_END"] = options.events["PLAYER_TRACK_END"]
-            }
-
-            if(options.events["PLAYER_TRACK_START"] && typeof options.events["PLAYER_TRACK_START"] == "function") {
-                this.playerEvents["PLAYER_TRACK_START"] = options.events["PLAYER_TRACK_START"]
-            }
-
-            if(options.events["PLAYER_QUEUE_END"] && typeof options.events["PLAYER_QUEUE_END"] == "function") {
-                this.playerEvents["PLAYER_QUEUE_END"] = options.events["PLAYER_QUEUE_END"]
-            }
-        }
-
         for (const node of nodes) this.createNode(node)
+        setInterval(() => {
+            for (const node of Array.from(this.nodes, ([a, b]) => b)) {
+                node.send({ op: "ping" })
+            }
+        }, 3000)
         require("./ManagerEvents")(this)
     }
 
@@ -71,7 +62,7 @@ class Manager extends EventEmitter {
         if (!player)
             return false
         player.removeAllListeners()
-        await player.destroy()
+        await player.send("destroy")
         return this.players.delete(guild)
     }
     async switch(player, node) {
